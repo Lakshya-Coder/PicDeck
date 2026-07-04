@@ -1,0 +1,21 @@
+#buttons{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+    gap:12px;
+    margin-top:20px;
+}
+
+#buttons button{
+    padding:12px;
+    border:none;
+    border-radius:8px;
+    background:#2563eb;
+    color:white;
+    cursor:pointer;
+    transition:.2s;
+}
+
+#buttons button:hover{
+    background:#1d4ed8;
+    transform:translateY(-2px);
+}
