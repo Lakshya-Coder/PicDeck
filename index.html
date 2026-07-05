@@ -3,37 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raspberry Pi Control</title>
-
+    <title>Raspberry Pi Hub</title>
+    <meta name="description" content="Dashboard for your Raspberry Pi services">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-
-    <script type="module" src="app.js"></script>
+    <script type="module" src="app.js" defer></script>
 </head>
 <body>
+    <div class="background-animation"></div>
+    <main class="container">
+        <header class="header">
+            <div class="logo-wrapper">
+                <div class="pulse-ring"></div>
+                <!-- Using an elegant minimalist Pi logo or icon -->
+                <svg class="logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+            </div>
+            <h1>Raspberry Pi Hub</h1>
+            <div class="status-badge">
+                <span class="status-indicator" id="status-dot"></span>
+                <p class="ip-address">IP: <strong id="ip">Fetching...</strong></p>
+                <div class="badge-divider"></div>
+                <p class="timestamp">Updated: <strong id="timestamp">--</strong></p>
+            </div>
+        </header>
 
-<div class="container">
-    <h1>Raspberry Pi</h1>
-
-    <!-- <div class="card">
-        <p><strong>IP Address</strong></p>
-        <h2 id="ip">Loading...</h2>
-
-        <button id="visitBtn" disabled>
-            Open Raspberry Pi
-        </button>
-    </div> -->
-
-    <div class="container">
-    <h1>Raspberry Pi</h1>
-
-    <div class="card">
-        <p><strong>Current IP</strong></p>
-        <h2 id="ip">Loading...</h2>
-
-        <div id="buttons"></div>
-    </div>
-</div>
-</div>
-
+        <section class="services-card">
+            <h2 class="services-title">Available Services</h2>
+            <div id="buttons" class="buttons-grid">
+                <!-- Buttons will be dynamically injected here -->
+            </div>
+        </section>
+    </main>
 </body>
 </html>
