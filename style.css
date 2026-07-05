@@ -1,14 +1,14 @@
 :root {
-    --bg-color-1: #0f172a;
-    --bg-color-2: #1e1b4b;
-    --card-bg: rgba(255, 255, 255, 0.05);
-    --card-border: rgba(255, 255, 255, 0.1);
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
-    --accent: #8b5cf6;
-    --accent-hover: #7c3aed;
-    --success: #10b981;
-    --error: #ef4444;
+    --bg-color-1: #050505;
+    --bg-color-2: #0a0a0a;
+    --card-bg: rgba(20, 20, 20, 0.4);
+    --card-border: rgba(255, 255, 255, 0.06);
+    --text-main: #ffffff;
+    --text-muted: #a3a3a3;
+    --accent: #00f2fe;
+    --accent-hover: #4facfe;
+    --success: #00ff87;
+    --error: #ff0f7b;
 }
 
 * {
@@ -31,19 +31,23 @@ body {
 
 .background-animation {
     position: fixed;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle at center, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
-    animation: rotate 30s linear infinite;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: 
+        radial-gradient(circle at 15% 50%, rgba(0, 242, 254, 0.12), transparent 40%),
+        radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.12), transparent 40%),
+        radial-gradient(circle at 50% 80%, rgba(79, 172, 254, 0.1), transparent 40%);
     z-index: 0;
     pointer-events: none;
+    filter: blur(40px);
+    animation: pulseBg 12s ease-in-out infinite alternate;
 }
 
-@keyframes rotate {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+@keyframes pulseBg {
+    0% { transform: scale(1); opacity: 0.7; }
+    100% { transform: scale(1.15); opacity: 1; }
 }
 
 .container {
@@ -98,12 +102,13 @@ body {
 }
 
 h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    background: linear-gradient(to right, #fff, #cbd5e1);
+    font-size: 2.75rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #ffffff 0%, #a3a3a3 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
 }
 
 .status-badge {
@@ -166,9 +171,9 @@ h1 {
     border: 1px solid var(--card-border);
     border-radius: 24px;
     padding: 2.5rem;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .services-title {
@@ -196,23 +201,24 @@ h1 {
     gap: 1.25rem;
 }
 
-.buttons-grid button {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+.service-btn {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 16px;
     padding: 1.25rem;
     color: var(--text-main);
     font-family: 'Inter', sans-serif;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
     gap: 1rem;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
-.buttons-grid button::before {
+.service-btn::before {
     content: '';
     position: absolute;
     top: 0;
@@ -224,18 +230,18 @@ h1 {
     transition: opacity 0.3s;
 }
 
-.buttons-grid button:hover {
-    transform: translateY(-4px);
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 10px 20px -10px rgba(0, 0, 0, 0.5), 0 0 15px rgba(139, 92, 246, 0.2);
+.service-btn:hover {
+    transform: translateY(-5px) scale(1.02);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(0, 242, 254, 0.3);
+    box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 242, 254, 0.15);
 }
 
-.buttons-grid button:hover::before {
+.service-btn:hover::before {
     opacity: 1;
 }
 
-.buttons-grid button:active {
+.service-btn:active {
     transform: translateY(0);
 }
 
@@ -253,7 +259,234 @@ h1 {
     .buttons-grid {
         grid-template-columns: 1fr;
     }
-    .services-card {
-        padding: 1.5rem;
-    }
+}
+
+/* --- Add Service UI --- */
+.services-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.services-title {
+    margin-bottom: 0;
+}
+
+.add-btn {
+    background: rgba(0, 242, 254, 0.1);
+    border: 1px solid rgba(0, 242, 254, 0.3);
+    color: var(--accent);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.add-btn:hover {
+    background: rgba(0, 242, 254, 0.2);
+    box-shadow: 0 0 10px rgba(0, 242, 254, 0.2);
+}
+
+/* Modal Styling */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--bg-color-2);
+    border: 1px solid var(--card-border);
+    padding: 2rem;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+}
+
+.close-modal {
+    position: absolute;
+    top: 1rem; right: 1rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-muted);
+}
+.close-modal:hover { color: var(--text-main); }
+
+.modal-content h2 {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.form-group input, .form-group select {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--card-border);
+    padding: 0.75rem;
+    border-radius: 8px;
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    outline: none;
+}
+.form-group input:focus, .form-group select:focus {
+    border-color: var(--accent);
+}
+
+.form-group select option {
+    background: var(--bg-color-2);
+    color: var(--text-main);
+}
+
+.submit-btn {
+    width: 100%;
+    margin-top: 1rem;
+    background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+    border: none;
+    padding: 0.75rem;
+    border-radius: 8px;
+    color: #000;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.submit-btn:hover {
+    box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+}
+.service-btn-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+/* --- Delete Service Button --- */
+
+.delete-service-btn {
+    position: absolute !important;
+    top: 10px;
+    right: 10px;
+    width: 28px !important;
+    height: 28px !important;
+    padding: 0 !important;
+    background: rgba(255, 15, 123, 0.2) !important;
+    color: var(--error) !important;
+    border: 1px solid rgba(255, 15, 123, 0.3) !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    opacity: 0;
+    transition: opacity 0.3s, background 0.3s, transform 0.2s !important;
+    box-shadow: none !important;
+    z-index: 10;
+}
+
+.service-btn:hover .delete-service-btn {
+    opacity: 1;
+}
+
+.delete-service-btn:hover {
+    background: var(--error) !important;
+    color: #fff !important;
+    transform: scale(1.1) !important;
+    box-shadow: 0 0 10px rgba(255, 15, 123, 0.4) !important;
+}
+
+/* --- SSH Command Box --- */
+.ssh-command-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.75rem 1.25rem;
+    border-radius: 12px;
+    margin-top: 1.5rem;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ssh-command-box:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px rgba(0, 242, 254, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border-color: rgba(0, 242, 254, 0.3);
+}
+
+.ssh-command-box code {
+    font-family: monospace;
+    font-size: 1.05rem;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    display: flex;
+    align-items: baseline;
+}
+
+#ssh-user {
+    background: transparent;
+    border: none;
+    border-bottom: 1px dashed var(--accent);
+    color: var(--accent);
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    width: 3ch;
+    text-align: center;
+    outline: none;
+    padding: 0;
+    margin: 0;
+    transition: all 0.2s;
+}
+
+#ssh-user:focus {
+    background: rgba(0, 242, 254, 0.1);
+    border-bottom: 1px solid var(--text-main);
+    color: var(--text-main);
+}
+
+#copy-ssh-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#copy-ssh-btn:hover {
+    color: #000;
+    background: var(--accent);
+    border-color: var(--accent);
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(0, 242, 254, 0.5);
 }

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +13,7 @@
     <link rel="stylesheet" href="style.css">
     <script type="module" src="app.js" defer></script>
 </head>
+
 <body>
     <div class="background-animation"></div>
     <main class="container">
@@ -19,27 +21,68 @@
             <div class="logo-wrapper">
                 <div class="pulse-ring"></div>
                 <!-- Using an elegant minimalist Pi logo or icon -->
-                <svg class="logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
                     <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
                     <line x1="8" y1="21" x2="16" y2="21"></line>
                     <line x1="12" y1="17" x2="12" y2="21"></line>
                 </svg>
             </div>
-            <h1>Raspberry Pi Hub</h1>
+            <h1>lskhub</h1>
             <div class="status-badge">
                 <span class="status-indicator" id="status-dot"></span>
                 <p class="ip-address">IP: <strong id="ip">Fetching...</strong></p>
                 <div class="badge-divider"></div>
                 <p class="timestamp">Updated: <strong id="timestamp">--</strong></p>
             </div>
+            <div class="ssh-command-box" id="ssh-box" style="display: none;">
+                <code>ssh&nbsp;<input type="text" id="ssh-user" value="lsk" title="Edit username">@<span id="ssh-ip">...</span></code>
+                <button id="copy-ssh-btn" title="Copy to clipboard">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                </button>
+            </div>
         </header>
 
         <section class="services-card">
-            <h2 class="services-title">Available Services</h2>
+            <div class="services-header">
+                <h2 class="services-title">Available Services</h2>
+                <button id="add-service-btn" class="add-btn">+ Add Service</button>
+            </div>
             <div id="buttons" class="buttons-grid">
                 <!-- Buttons will be dynamically injected here -->
             </div>
         </section>
     </main>
+
+    <!-- Add Service Modal -->
+    <div id="add-service-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Add New Service</h2>
+            <form id="add-service-form">
+                <div class="form-group">
+                    <label for="service-icon">Icon (Emoji)</label>
+                    <input type="text" id="service-icon" required placeholder="e.g. 🌐">
+                </div>
+                <div class="form-group">
+                    <label for="service-name">Name</label>
+                    <input type="text" id="service-name" required placeholder="e.g. Dashboard">
+                </div>
+                <div class="form-group">
+                    <label for="service-protocol">Protocol</label>
+                    <select id="service-protocol">
+                        <option value="http">http</option>
+                        <option value="https">https</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="service-port">Port</label>
+                    <input type="number" id="service-port" required placeholder="e.g. 80">
+                </div>
+                <button type="submit" class="submit-btn">Save Service</button>
+            </form>
+        </div>
+    </div>
 </body>
+
 </html>

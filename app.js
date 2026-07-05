@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
+import { getDatabase, ref, onValue, push, remove, set } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
 
 const firebaseConfig = {
     apiKey: "YOUR_API_KEY",
@@ -19,21 +19,79 @@ const timestampText = document.getElementById("timestamp");
 const buttonsDiv = document.getElementById("buttons");
 const statusDot = document.getElementById("status-dot");
 const pulseRing = document.querySelector(".pulse-ring");
+const sshBox = document.getElementById("ssh-box");
+const sshIpText = document.getElementById("ssh-ip");
+const copySshBtn = document.getElementById("copy-ssh-btn");
+const sshUser = document.getElementById("ssh-user");
 
-/*
-|--------------------------------------------------------------------------
-| Configure your services here
-|--------------------------------------------------------------------------
-*/
-const SERVICES = [
-    { name: "🌐 Dashboard", protocol: "http", port: 80 },
-    { name: "📚 Kavita", protocol: "htt: 10.103.181.196p", port: 5000 },
-    { name: "📄 Stirling PDF", protocol: "http", port: 8080 },
-    { name: "☁️ Nextcloud", protocol: "https", port: 8443 },
-    { name: "🛡️ AdGuard Home", protocol: "http", port: 3000 },
-    { name: "📁 File Browser", protocol: "http", port: 8080 },
-    { name: "🏠 Homarr", protocol: "http", port: 7575 }
-];
+if (sshUser) {
+    sshUser.addEventListener("input", function() {
+        this.style.width = Math.max(3, this.value.length) + "ch";
+    });
+
+    sshUser.addEventListener("change", function() {
+        set(ref(db, 'sshUsername'), this.value).catch(err => console.error("Error saving username:", err));
+    });
+}
+
+if (copySshBtn) {
+    copySshBtn.onclick = () => {
+        const user = sshUser ? sshUser.value || "lsk" : "lsk";
+        const cmd = `ssh ${user}@${sshIpText.textContent}`;
+        navigator.clipboard.writeText(cmd).then(() => {
+            const originalColor = copySshBtn.style.color;
+            copySshBtn.style.color = "var(--success)";
+            setTimeout(() => {
+                copySshBtn.style.color = originalColor;
+            }, 1000);
+        });
+    };
+}
+
+
+
+// Add Service Modal Logic
+const modal = document.getElementById("add-service-modal");
+const addBtn = document.getElementById("add-service-btn");
+const closeBtn = document.querySelector(".close-modal");
+const form = document.getElementById("add-service-form");
+
+addBtn.onclick = () => {
+    modal.classList.add("active");
+};
+
+closeBtn.onclick = () => {
+    modal.classList.remove("active");
+};
+
+window.onclick = (e) => {
+    if (e.target == modal) {
+        modal.classList.remove("active");
+    }
+};
+
+form.onsubmit = (e) => {
+    e.preventDefault();
+    const icon = document.getElementById("service-icon").value;
+    const name = document.getElementById("service-name").value;
+    const protocol = document.getElementById("service-protocol").value;
+    const port = document.getElementById("service-port").value;
+
+    const newService = {
+        name: `${icon} ${name}`,
+        protocol: protocol,
+        port: parseInt(port)
+    };
+
+    const servicesRef = ref(db, 'services');
+    push(servicesRef, newService).then(() => {
+        modal.classList.remove("active");
+        form.reset();
+    }).catch((error) => {
+        console.error("Error adding service:", error);
+        alert("Failed to add service. Check console.");
+    });
+};
 
 onValue(ref(db), (snapshot) => {
     const data = snapshot.val();
@@ -44,13 +102,24 @@ onValue(ref(db), (snapshot) => {
         buttonsDiv.innerHTML = "";
         if (statusDot) statusDot.classList.add("offline");
         if (pulseRing) pulseRing.style.display = "none";
+        if (sshBox) sshBox.style.display = "none";
         return;
     }
 
     const ip = data.ip;
     ipText.textContent = ip;
+    if (sshIpText) sshIpText.textContent = ip;
+    if (sshBox) sshBox.style.display = "flex";
+    
     if (statusDot) statusDot.classList.remove("offline");
     if (pulseRing) pulseRing.style.display = "block";
+
+    if (sshUser && data.sshUsername !== undefined) {
+        if (document.activeElement !== sshUser) {
+            sshUser.value = data.sshUsername;
+            sshUser.style.width = Math.max(3, sshUser.value.length) + "ch";
+        }
+    }
 
     if (timestampText) {
         if (data.time) {
@@ -81,8 +150,23 @@ onValue(ref(db), (snapshot) => {
 
     buttonsDiv.innerHTML = "";
 
-    SERVICES.forEach(service => {
+    let currentServices = [];
+    if (data && data.services) {
+        if (Array.isArray(data.services)) {
+            currentServices = data.services.map((svc, index) => {
+                if (svc) return { id: index, ...svc };
+                return null;
+            }).filter(Boolean);
+        } else {
+            currentServices = Object.entries(data.services).map(([key, value]) => ({ id: key, ...value }));
+        }
+    }
+
+    currentServices.forEach(service => {
+        if (!service) return;
+
         const btn = document.createElement("button");
+        btn.className = "service-btn";
 
         // Split icon from text assuming standard format "emoji Name"
         const [icon, ...nameParts] = service.name.split(" ");
@@ -95,6 +179,19 @@ onValue(ref(db), (snapshot) => {
             window.open(url, "_blank");
         };
 
+        const delBtn = document.createElement("button");
+        delBtn.className = "delete-service-btn";
+        delBtn.innerHTML = "&times;";
+        delBtn.title = "Delete Service";
+        delBtn.onclick = (e) => {
+            e.stopPropagation();
+            remove(ref(db, `services/${service.id}`)).catch(err => {
+                console.error("Failed to delete service:", err);
+                alert("Failed to delete service.");
+            });
+        };
+
+        btn.appendChild(delBtn);
         buttonsDiv.appendChild(btn);
     });
 });
