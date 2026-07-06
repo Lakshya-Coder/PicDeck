@@ -1,0 +1,62 @@
+#!/bin/bash
+
+# ===== CONFIG =====
+# Targeting a dedicated node so it doesn't overwrite your entire database
+FIREBASE_URL="https://raspberry-pi-a8216-default-rtdb.firebaseio.com/lsk_pi_network.json"
+INTERVAL=60
+
+HOSTNAME=$(hostname)
+
+# ===== FUNCTIONS =====
+
+get_public_ip() {
+    curl -s --max-time 5 https://api.ipify.org
+}
+
+get_local_ip() {
+    hostname -I | awk '{print $1}'
+}
+
+has_internet() {
+    ping -c 1 8.8.8.8 > /dev/null 2>&1
+}
+
+get_firebase_ip() {
+    # Fetches the JSON from Firebase and extracts the current IP string
+    curl -s "$FIREBASE_URL" | sed -n 's/.*"ip":"\([^"]*\)".*/\1/p'
+}
+
+send_data() {
+    ip="$1"
+    timestamp=$(date +%s)
+
+    # Using PATCH to only update the ip and time fields, leaving the rest of the DB intact
+    curl -s -X PATCH \
+        -H "Content-Type: application/json" \
+        -d "{\"ip\":\"$ip\",\"time\":$timestamp}" \
+        "$FIREBASE_URL" > /dev/null
+}
+
+# ===== MAIN LOOP =====
+
+logger -t IP_TRACKER "[*] Tracking Started for $HOSTNAME..."
+
+while true; do
+    if has_internet; then
+        current_ip=$(get_local_ip)
+
+        # Pull the last known IP directly from Firebase
+        last_ip=$(get_firebase_ip)
+
+        if [ "$current_ip" != "$last_ip" ] && [ ! -z "$current_ip" ]; then
+            logger -t IP_TRACKER "[+] Sending new IP: $current_ip"
+            send_data "$current_ip"
+        else
+            logger -t IP_TRACKER "[=] No change (Current: $current_ip)"
+        fi
+    else
+        logger -t IP_TRACKER "[-] Offline"
+    fi
+
+    sleep $INTERVAL
+done

@@ -1,0 +1,11 @@
+[Unit]
+Description=IP Uploader to Firebase
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/ip_uploader_to_firebase
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target
