@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="style.css?v=2">
     <script type="module" src="app.js" defer></script>
     <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 </head>
 
 <body>
@@ -60,11 +61,11 @@
         </section>
     </main>
 
-    <!-- Add Service Modal -->
+    <!-- Add/Edit Service Modal -->
     <div id="add-service-modal" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
-            <h2>Add New Service</h2>
+            <h2 id="modal-title">Add New Service</h2>
             <form id="add-service-form">
                 <div class="form-group" style="position: relative;">
                     <label for="service-icon">Icon (Emoji)</label>
@@ -93,6 +94,9 @@
             </form>
         </div>
     </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
 </body>
 
 </html>

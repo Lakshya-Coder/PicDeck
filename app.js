@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-import { getDatabase, ref, onValue, push, remove, set } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
+import { getDatabase, ref, onValue, push, remove, set, update } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
 
 const firebaseConfig = {
     apiKey: "YOUR_API_KEY",
@@ -13,6 +13,29 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+
+let editingServiceId = null;
+let sortableInstance = null;
+let initialDataFetched = false;
+
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    
+    let icon = '✅';
+    if (type === 'error') icon = '❌';
+    else if (type === 'info') icon = 'ℹ️';
+    
+    toast.innerHTML = `<span class="toast-icon">${icon}</span><span class="toast-message">${message}</span>`;
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.classList.add('fade-out');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
 
 const ipText = document.getElementById("ip");
 const timestampText = document.getElementById("timestamp");
@@ -31,7 +54,12 @@ if (sshUser) {
     });
 
     sshUser.addEventListener("change", function () {
-        set(ref(db, 'sshUsername'), this.value).catch(err => console.error("Error saving username:", err));
+        set(ref(db, 'sshUsername'), this.value).then(() => {
+            showToast("Username updated!");
+        }).catch(err => {
+            console.error("Error saving username:", err);
+            showToast("Failed to update username.", "error");
+        });
     });
 }
 
@@ -40,6 +68,7 @@ if (copySshBtn) {
         const user = sshUser ? sshUser.value || "lsk" : "lsk";
         const cmd = `ssh ${user}@${sshIpText.textContent}`;
         navigator.clipboard.writeText(cmd).then(() => {
+            showToast("SSH command copied!");
             const originalColor = copySshBtn.style.color;
             copySshBtn.style.color = "var(--success)";
             setTimeout(() => {
@@ -82,6 +111,9 @@ if (emojiPickerBtn && emojiPicker && serviceIconInput) {
 }
 
 addBtn.onclick = () => {
+    editingServiceId = null;
+    form.reset();
+    document.getElementById("modal-title").textContent = "Add New Service";
     modal.classList.add("active");
 };
 
@@ -104,24 +136,49 @@ form.onsubmit = (e) => {
     const protocol = document.getElementById("service-protocol").value;
     const port = document.getElementById("service-port").value;
 
-    const newService = {
-        name: `${icon} ${name}`,
-        protocol: protocol,
-        port: parseInt(port)
-    };
+    if (editingServiceId) {
+        update(ref(db, `services/${editingServiceId}`), {
+            name: `${icon} ${name}`,
+            protocol: protocol,
+            port: parseInt(port)
+        }).then(() => {
+            modal.classList.remove("active");
+            form.reset();
+            showToast("Service updated successfully.");
+            editingServiceId = null;
+        }).catch((error) => {
+            console.error("Error updating service:", error);
+            showToast("Failed to update service.", "error");
+        });
+    } else {
+        const newService = {
+            name: `${icon} ${name}`,
+            protocol: protocol,
+            port: parseInt(port),
+            order: Date.now()
+        };
 
-    const servicesRef = ref(db, 'services');
-    push(servicesRef, newService).then(() => {
-        modal.classList.remove("active");
-        form.reset();
-    }).catch((error) => {
-        console.error("Error adding service:", error);
-        alert("Failed to add service. Check console.");
-    });
+        const servicesRef = ref(db, 'services');
+        push(servicesRef, newService).then(() => {
+            modal.classList.remove("active");
+            form.reset();
+            showToast("Service added successfully.");
+        }).catch((error) => {
+            console.error("Error adding service:", error);
+            showToast("Failed to add service.", "error");
+        });
+    }
 };
+
+showToast("Fetching data from Raspberry Pi...", "info");
 
 onValue(ref(db), (snapshot) => {
     const data = snapshot.val() || {};
+
+    if (!initialDataFetched) {
+        showToast("Data loaded successfully!");
+        initialDataFetched = true;
+    }
 
     if (sshUser && data.sshUsername !== undefined) {
         if (document.activeElement !== sshUser) {
@@ -196,12 +253,14 @@ onValue(ref(db), (snapshot) => {
         }
     }
 
+    currentServices.sort((a, b) => (a.order || 0) - (b.order || 0));
+
     currentServices.forEach((service, index) => {
         if (!service) return;
 
         const btn = document.createElement("button");
         btn.className = "service-btn";
-        btn.style.animationDelay = `${index * 0.1}s`;
+        btn.setAttribute("data-id", service.id);
 
         // Split icon from text assuming standard format "emoji Name"
         const [icon, ...nameParts] = service.name.split(" ");
@@ -214,19 +273,61 @@ onValue(ref(db), (snapshot) => {
             window.open(url, "_blank");
         };
 
+        const editBtn = document.createElement("button");
+        editBtn.className = "edit-service-btn";
+        editBtn.innerHTML = "✏️";
+        editBtn.title = "Edit Service";
+        editBtn.onclick = (e) => {
+            e.stopPropagation();
+            editingServiceId = service.id;
+            document.getElementById("modal-title").textContent = "Edit Service";
+            document.getElementById("service-icon").value = icon;
+            document.getElementById("service-name").value = nameText;
+            document.getElementById("service-protocol").value = service.protocol;
+            document.getElementById("service-port").value = service.port;
+            modal.classList.add("active");
+        };
+
         const delBtn = document.createElement("button");
         delBtn.className = "delete-service-btn";
         delBtn.innerHTML = "&times;";
         delBtn.title = "Delete Service";
         delBtn.onclick = (e) => {
             e.stopPropagation();
-            remove(ref(db, `services/${service.id}`)).catch(err => {
+            remove(ref(db, `services/${service.id}`)).then(() => {
+                showToast("Service deleted.");
+            }).catch(err => {
                 console.error("Failed to delete service:", err);
-                alert("Failed to delete service.");
+                showToast("Failed to delete service.", "error");
             });
         };
 
+        btn.appendChild(editBtn);
         btn.appendChild(delBtn);
         buttonsDiv.appendChild(btn);
     });
+
+    if (sortableInstance) sortableInstance.destroy();
+    if (window.Sortable && buttonsDiv) {
+        sortableInstance = Sortable.create(buttonsDiv, {
+            animation: 150,
+            ghostClass: 'sortable-ghost',
+            dragClass: 'sortable-drag',
+            filter: '.edit-service-btn, .delete-service-btn',
+            preventOnFilter: false,
+            onEnd: function (evt) {
+                const updates = {};
+                Array.from(buttonsDiv.children).forEach((child, idx) => {
+                    const id = child.getAttribute("data-id");
+                    if (id) updates[`services/${id}/order`] = idx;
+                });
+                update(ref(db), updates).then(() => {
+                    showToast("Order saved.");
+                }).catch(err => {
+                    console.error("Order save error:", err);
+                    showToast("Failed to save order.", "error");
+                });
+            }
+        });
+    }
 });
