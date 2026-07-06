@@ -4,13 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raspberry Pi Hub</title>
+    <title>Server</title>
     <meta name="description" content="Dashboard for your Raspberry Pi services">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=2">
     <script type="module" src="app.js" defer></script>
 </head>
 
@@ -28,7 +29,7 @@
                     <line x1="12" y1="17" x2="12" y2="21"></line>
                 </svg>
             </div>
-            <h1>lskhub</h1>
+            <h1 id="main-title">--</h1>
             <div class="status-badge">
                 <span class="status-indicator" id="status-dot"></span>
                 <p class="ip-address">IP: <strong id="ip">Fetching...</strong></p>
@@ -38,7 +39,11 @@
             <div class="ssh-command-box" id="ssh-box" style="display: none;">
                 <code>ssh&nbsp;<input type="text" id="ssh-user" value="lsk" title="Edit username">@<span id="ssh-ip">...</span></code>
                 <button id="copy-ssh-btn" title="Copy to clipboard">
-                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
                 </button>
             </div>
         </header>

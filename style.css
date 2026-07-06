@@ -18,7 +18,7 @@
 }
 
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'IBM Plex Mono', monospace;
     background: linear-gradient(135deg, var(--bg-color-1), var(--bg-color-2));
     color: var(--text-main);
     min-height: 100vh;
@@ -143,7 +143,7 @@ h1 {
 
 .ip-address strong {
     color: var(--text-main);
-    font-family: monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 1.1rem;
     margin-left: 0.25rem;
 }
@@ -161,7 +161,7 @@ h1 {
 
 .timestamp strong {
     color: var(--text-main);
-    font-family: monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 1.1rem;
     margin-left: 0.25rem;
 }
@@ -207,7 +207,7 @@ h1 {
     border-radius: 16px;
     padding: 1.25rem;
     color: var(--text-main);
-    font-family: 'Inter', sans-serif;
+    font-family: 'IBM Plex Mono', monospace;
     cursor: pointer;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
@@ -216,6 +216,19 @@ h1 {
     position: relative;
     overflow: hidden;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    opacity: 0;
+    animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .service-btn::before {
@@ -348,7 +361,7 @@ h1 {
     padding: 0.75rem;
     border-radius: 8px;
     color: var(--text-main);
-    font-family: 'Inter', sans-serif;
+    font-family: 'IBM Plex Mono', monospace;
     outline: none;
 }
 .form-group input:focus, .form-group select:focus {
@@ -439,7 +452,7 @@ h1 {
 }
 
 .ssh-command-box code {
-    font-family: monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 1.05rem;
     color: var(--accent);
     letter-spacing: 0.05em;
@@ -453,7 +466,7 @@ h1 {
     border: none;
     border-bottom: 1px dashed var(--accent);
     color: var(--accent);
-    font-family: inherit;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: inherit;
     font-weight: inherit;
     width: 3ch;

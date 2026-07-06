@@ -23,13 +23,14 @@ const sshBox = document.getElementById("ssh-box");
 const sshIpText = document.getElementById("ssh-ip");
 const copySshBtn = document.getElementById("copy-ssh-btn");
 const sshUser = document.getElementById("ssh-user");
+const mainTitle = document.getElementById("main-title");
 
 if (sshUser) {
-    sshUser.addEventListener("input", function() {
+    sshUser.addEventListener("input", function () {
         this.style.width = Math.max(3, this.value.length) + "ch";
     });
 
-    sshUser.addEventListener("change", function() {
+    sshUser.addEventListener("change", function () {
         set(ref(db, 'sshUsername'), this.value).catch(err => console.error("Error saving username:", err));
     });
 }
@@ -94,9 +95,23 @@ form.onsubmit = (e) => {
 };
 
 onValue(ref(db), (snapshot) => {
-    const data = snapshot.val();
+    const data = snapshot.val() || {};
 
-    if (!data?.ip) {
+    if (sshUser && data.sshUsername !== undefined) {
+        if (document.activeElement !== sshUser) {
+            sshUser.value = data.sshUsername;
+            sshUser.style.width = Math.max(3, sshUser.value.length) + "ch";
+        }
+        if (mainTitle) {
+            mainTitle.textContent = `${data.sshUsername}`;
+        }
+    } else {
+        if (mainTitle) {
+            mainTitle.textContent = "lsk";
+        }
+    }
+
+    if (!data.lsk_pi_network?.ip) {
         ipText.textContent = "Offline";
         if (timestampText) timestampText.textContent = "--";
         buttonsDiv.innerHTML = "";
@@ -106,25 +121,18 @@ onValue(ref(db), (snapshot) => {
         return;
     }
 
-    const ip = data.ip;
+    const ip = data.lsk_pi_network.ip;
     ipText.textContent = ip;
     if (sshIpText) sshIpText.textContent = ip;
     if (sshBox) sshBox.style.display = "flex";
-    
+
     if (statusDot) statusDot.classList.remove("offline");
     if (pulseRing) pulseRing.style.display = "block";
 
-    if (sshUser && data.sshUsername !== undefined) {
-        if (document.activeElement !== sshUser) {
-            sshUser.value = data.sshUsername;
-            sshUser.style.width = Math.max(3, sshUser.value.length) + "ch";
-        }
-    }
-
     if (timestampText) {
-        if (data.time) {
+        if (data.lsk_pi_network?.time) {
             // Check if the timestamp is in seconds (e.g., from Python) or milliseconds
-            let timeValue = data.time;
+            let timeValue = data.lsk_pi_network.time;
             if (typeof timeValue === 'number' && timeValue < 10000000000) {
                 timeValue *= 1000;
             }
@@ -138,7 +146,7 @@ onValue(ref(db), (snapshot) => {
             let hours12 = rawHours % 12;
             hours12 = hours12 ? hours12 : 12; // the hour '0' should be '12'
             const hours = String(hours12).padStart(2, '0');
-            
+
             const minutes = String(date.getMinutes()).padStart(2, '0');
             const seconds = String(date.getSeconds()).padStart(2, '0');
 
@@ -162,11 +170,12 @@ onValue(ref(db), (snapshot) => {
         }
     }
 
-    currentServices.forEach(service => {
+    currentServices.forEach((service, index) => {
         if (!service) return;
 
         const btn = document.createElement("button");
         btn.className = "service-btn";
+        btn.style.animationDelay = `${index * 0.1}s`;
 
         // Split icon from text assuming standard format "emoji Name"
         const [icon, ...nameParts] = service.name.split(" ");
