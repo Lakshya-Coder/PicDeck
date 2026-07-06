@@ -13,6 +13,7 @@
         rel="stylesheet">
     <link rel="stylesheet" href="style.css?v=2">
     <script type="module" src="app.js" defer></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1/index.js"></script>
 </head>
 
 <body>
@@ -65,9 +66,13 @@
             <span class="close-modal">&times;</span>
             <h2>Add New Service</h2>
             <form id="add-service-form">
-                <div class="form-group">
+                <div class="form-group" style="position: relative;">
                     <label for="service-icon">Icon (Emoji)</label>
-                    <input type="text" id="service-icon" required placeholder="e.g. 🌐">
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <input type="text" id="service-icon" required placeholder="e.g. 🌐" style="flex: 1;">
+                        <button type="button" id="emoji-picker-btn" class="emoji-btn">😀</button>
+                    </div>
+                    <emoji-picker id="emoji-picker" class="dark"></emoji-picker>
                 </div>
                 <div class="form-group">
                     <label for="service-name">Name</label>

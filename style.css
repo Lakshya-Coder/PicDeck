@@ -373,6 +373,45 @@ h1 {
     color: var(--text-main);
 }
 
+/* Emoji Picker Styles */
+.emoji-btn {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    color: var(--text-main);
+    cursor: pointer;
+    padding: 0 0.8rem;
+    height: 42px; /* Matching input height roughly */
+    font-size: 1.25rem;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.emoji-btn:hover {
+    border-color: var(--accent);
+    background: rgba(0, 242, 254, 0.1);
+}
+
+emoji-picker {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 1001;
+    --background: var(--bg-color-2);
+    --border-color: var(--card-border);
+    --input-border-color: var(--card-border);
+    --indicator-color: var(--accent);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    margin-top: 0.5rem;
+}
+emoji-picker.active {
+    display: block;
+}
+
 .submit-btn {
     width: 100%;
     margin-top: 1rem;

@@ -57,17 +57,43 @@ const addBtn = document.getElementById("add-service-btn");
 const closeBtn = document.querySelector(".close-modal");
 const form = document.getElementById("add-service-form");
 
+// Emoji Picker Logic
+const emojiPickerBtn = document.getElementById("emoji-picker-btn");
+const emojiPicker = document.getElementById("emoji-picker");
+const serviceIconInput = document.getElementById("service-icon");
+
+if (emojiPickerBtn && emojiPicker && serviceIconInput) {
+    emojiPickerBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        emojiPicker.classList.toggle('active');
+    });
+
+    emojiPicker.addEventListener('emoji-click', (e) => {
+        serviceIconInput.value = e.detail.unicode;
+        emojiPicker.classList.remove('active');
+    });
+    
+    // Hide picker when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!emojiPicker.contains(e.target) && e.target !== emojiPickerBtn) {
+            emojiPicker.classList.remove('active');
+        }
+    });
+}
+
 addBtn.onclick = () => {
     modal.classList.add("active");
 };
 
 closeBtn.onclick = () => {
     modal.classList.remove("active");
+    if (emojiPicker) emojiPicker.classList.remove('active');
 };
 
 window.onclick = (e) => {
     if (e.target == modal) {
         modal.classList.remove("active");
+        if (emojiPicker) emojiPicker.classList.remove('active');
     }
 };
 
